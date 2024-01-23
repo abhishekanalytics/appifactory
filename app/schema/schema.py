@@ -5,11 +5,10 @@ class User:
     
     def __init__(self, username, email):
         self.username = username
-        self.email=email
+        self.email = email
 
     def to_dict(self):
-        {"username":self.username,
-        "email":self.email }
+        return {'username': self.username, 'email': self.email}
     def save_to_db(self):
         try:                             
         # Access MongoDB using mongo object

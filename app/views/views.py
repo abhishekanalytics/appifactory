@@ -1,8 +1,4 @@
 
-
-
-
-
 # your_app/views.py
 from flask import jsonify
 from bson import ObjectId
@@ -43,7 +39,7 @@ def manage_task(task_id):
         # Handle GET request (fetch a specific task by _id)
         user_data = mongo.db.users.find_one({"_id": task_object_id})
         if user_data:
-            user = User(user_data['username'], user_data['email'])
+            user = User(user_data['username'],user_data['email'])
             return jsonify(user.to_dict())
         else:
             return jsonify(error=f"No task found with id {task_id}.")
