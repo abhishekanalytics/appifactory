@@ -10,7 +10,7 @@ def create_app(config_class=Config):
 
     mongo.init_app(app)
 
-    from .route import main_blueprint
+    from .views.views import main_blueprint
     app.register_blueprint(main_blueprint)
 
     return app  
