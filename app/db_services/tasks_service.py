@@ -24,7 +24,7 @@ def get_task_by_id(task_id):
 
 def update_task(task_id, description):
     try:
-        updated_data = {"$set": {"description": description}}
+        updated_data = {"$set": {"description": description,}}
         result = mongo.db.tasks.update_one({"_id": ObjectId(task_id)}, updated_data)
         if result.modified_count > 0:
             return {"message": f"Task with id {task_id} updated successfully."}

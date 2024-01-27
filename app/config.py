@@ -1,3 +1,3 @@
 class Config:                           
-    MONGO_URI = "mongodb://localhost:27017/newdatabase"
+    MONGO_URI = "mongodb://localhost:27017/userdata"
 

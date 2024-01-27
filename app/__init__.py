@@ -9,5 +9,7 @@ mongo = PyMongo(app)
 
 from .views.tasks_views import tasks_blueprint
 app.register_blueprint(tasks_blueprint, url_prefix='/tasks')
+from .views.user_views import user_blueprint
+app.register_blueprint(user_blueprint,url_prefix='/users')
 
 
