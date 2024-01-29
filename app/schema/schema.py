@@ -33,15 +33,12 @@ class Task:
     def to_dict(self):
         return {'task_id': str(self.task_id), 'title': self.title, 'description': self.description}
     def save_to_db(self):
-        try:
+        
             # Here I am Accessing  MongoDB using mongo object
             collection = mongo.db.tasks
             task_data = {
-                "title": self.title,
+                
+                "task_id":self.task_id,
                 "description": self.description
             }
-            result = collection.insert_one(task_data)
-            self.task_id = result.inserted_id  
-            return str(self.task_id)
-        except Exception as e:
-            return("Error saving to the database :{e}")
+            

@@ -2,7 +2,7 @@ from flask import Blueprint, jsonify, request
 from ..db_services.tasks_service import get_all_tasks, create_task, get_task_by_id, update_task, delete_task
 from ..route.tasks import tasks_blueprint
 
-@tasks_blueprint.route('/124/task', methods=["GET", "POST"])
+@tasks_blueprint.route('/api', methods=["GET", "POST"])
 def manage_tasks():
     if request.method == "GET":
         tasks_list = get_all_tasks()
@@ -13,9 +13,9 @@ def manage_tasks():
             result = create_task(title=data['title'], description=data['description'])
             return jsonify(result)
         except Exception as e:
-            return jsonify(error=f"Error creating task: {e}")
+            return jsonify(error="give data in jason format in 'in raw'")
 
-@tasks_blueprint.route('/124/task/<string:task_id>', methods=["GET", "PUT", "DELETE"])
+@tasks_blueprint.route('/api/<string:task_id>', methods=["GET", "PUT", "DELETE"])
 def manage_task(task_id):
     if request.method == "GET":
         task = get_task_by_id(task_id)

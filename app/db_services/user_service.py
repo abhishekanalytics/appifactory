@@ -11,13 +11,12 @@ def get_all_users():
 
 def create_user(username, email,firstname,lastname,mobileno):
     try:
-        print("in")
         new_user = User(username=username,email=email,firstname=firstname,lastname=lastname,mobileno=mobileno)
         new_user.save_to_db()
-        print(new_user)
+        
         return {"message": "user created successfully."}
     except Exception as e:
-        return {"error": f"Error creating user: {'E11000 duplicate key error collection: userdata.users index: unique_email_index dup key'}"}
+        return {"error": "email address is already in use"}
 
 def get_user_by_id(user_id):
     user_data = mongo.db.users.find_one({"_id": ObjectId(user_id)})

@@ -9,7 +9,7 @@ def get_all_tasks():
 
 def create_task(title, description):
     try:
-        new_task = Task(task_id=None, title=title, description=description)
+        new_task = Task(task_id=True, title=title, description=description)
         new_task.save_to_db()
         return {"message": "Task created successfully."}
     except Exception as e:
