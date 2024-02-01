@@ -22,7 +22,7 @@ class User(UserMixin):
         return check_password_hash(self.password, pwd)
 
     def to_dict(self):
-        return {'username': self.username, 'email': self.email}
+        return {'username': self.username, 'email': self.email,"mobileno":self.mobileno,"firstname":self.firstname,"lastname":self.lastname}
     
     @staticmethod
     def create_indexes():
@@ -59,7 +59,8 @@ class User(UserMixin):
                 firstname=user_data['firstname'],
                 lastname=user_data['lastname'],
                 mobileno=user_data['mobileno'],
-                password=user_data['password'],  
+                password=user_data["password"]
+                 
             )
         return None
 
@@ -80,7 +81,6 @@ class User(UserMixin):
         return None
 
     login_manager = LoginManager(app)
-
     @login_manager.user_loader
     def load_user(user_id):
         return User.load_user(user_id)

@@ -3,7 +3,7 @@ from flask import Blueprint, jsonify, request, flash
 from flask_login import login_user, logout_user, login_required
 from ..db_services.user_service import get_all_users, create_user, get_user_by_id, update_user, delete_user, authenticate_user
 from ..route.tasks import user_blueprint
-# user_blueprint = Blueprint('user', __name__)
+from flask_jwt_extended import create_access_token  
 
 @user_blueprint.route('/login', methods=['POST'])
 def login():
@@ -13,8 +13,8 @@ def login():
     user = authenticate_user(email, password)
     if user:
         login_user(user)
-        flash('Login successful', 'success')
-        return jsonify(message='Login successful')
+        access_token = create_access_token(identity=str(user.id))
+        return jsonify(message='Login successful', access_token=access_token)
     else:
         return jsonify(error='Invalid email or password')
 
@@ -34,7 +34,7 @@ def manage_users():
 
     elif request.method == "POST":
         try:
-            print("hello world")
+            
             data = request.get_json()
             result = create_user(
                 username=data['username'],
