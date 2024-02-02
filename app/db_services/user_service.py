@@ -3,10 +3,8 @@ from ..schema.schema import User
 from .. import mongo
 from bson import ObjectId
 from pymongo.errors import DuplicateKeyError
-from flask_login import login_user, logout_user
+from flask_login import logout_user
 from werkzeug.security import generate_password_hash
-from .. import app
-
 
 def get_all_users():
     users = mongo.db.users.find()
@@ -21,8 +19,6 @@ def get_all_users():
         for user in users
     ]
     return user_list
-
-
 def create_user(username, email, firstname, lastname, mobileno,password):
     try:
         hash_pwd = generate_password_hash(password)
@@ -38,7 +34,6 @@ def create_user(username, email, firstname, lastname, mobileno,password):
         return {"message": "user created successfully."}
     except DuplicateKeyError:
         return {"error": "username or email already exists"}
-
 def get_user_by_id(user_id):
     user_data = mongo.db.users.find_one({"_id": ObjectId(user_id)})
     if user_data:
@@ -49,11 +44,10 @@ def get_user_by_id(user_id):
             user_data['firstname'],
             user_data['lastname'],
             user_data['mobileno']
-                    )
+            )
         return user.to_dict()
     else:
         return None
-
 def update_user(user_id, email):
     try:
         updated_data = {"$set": {"email": email}}
@@ -64,7 +58,6 @@ def update_user(user_id, email):
             return {"message": f"No user found with id {user_id}."}
     except Exception as e:
         return {"error": f"Error updating user: {e}"}
-
 def delete_user(user_id):
     try:
         result = mongo.db.users.delete_one({"_id": ObjectId(user_id)})
@@ -74,13 +67,11 @@ def delete_user(user_id):
             return {"message": f"No user found with id {user_id}."}
     except Exception as e:
         return {"error": f"Error deleting user: {e}"}
-
 def authenticate_user(email, password):
     user = User.find_by_email(email)
     if user and user.check_password(password):
         return user
     return None
-
 def login(email, password):
     user = authenticate_user(email, password)
     if user:
@@ -88,7 +79,6 @@ def login(email, password):
         return {"message": "Login successful.", "access_token": access_token}
     else:
         return {"error": "Invalid user or password."}
-
 def logout():
     logout_user()
     return {"message": "Logout successful."}
