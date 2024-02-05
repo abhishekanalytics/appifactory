@@ -3,7 +3,11 @@ from flask import Blueprint, jsonify, request, flash
 from flask_login import login_user, logout_user, login_required
 from ..db_services.user_service import get_all_users, create_user, get_user_by_id, update_user, delete_user, authenticate_user
 from ..route.tasks import user_blueprint
-from flask_jwt_extended import create_access_token  
+from ..route.tasks import tasks_blueprint
+from ..schema.schema import User
+from flask_jwt_extended import create_access_token 
+
+
 
 @user_blueprint.route('/login', methods=['POST'])
 def login():
@@ -17,6 +21,21 @@ def login():
         return jsonify(message='Login successful', access_token=access_token)
     else:
         return jsonify(error='Invalid email or password')
+@tasks_blueprint.route('/api', methods=["POST"])
+def create_task():
+    try:
+        data = request.get_json()
+        user_id = data.get('user_id')
+        user = User.get(user_id)
+        if user:
+            result = create_task(title=data['title'], description=data['description'], user_id=user_id)
+            return jsonify(result)
+        else:
+            return jsonify(error="User not found.")
+    except Exception as e:
+        return jsonify(error="Error creating task: {}".format(e))
+
+
 @user_blueprint.route('/logout')
 @login_required
 def logout():
@@ -37,7 +56,8 @@ def manage_users():
                 password=data['password'],  
                 firstname=data['firstname'],
                 lastname=data['lastname'],
-                mobileno=data['mobileno']
+                mobileno=data['mobileno'],
+                role=data['role']
             )
             return jsonify(result)
         except Exception as e:
@@ -47,7 +67,7 @@ def manage_user(user_id):
     if request.method == "GET":
         user = get_user_by_id(user_id)
         if user:
-            return jsonify(user=user)
+            return jsonify(user=user.to_dict())
         else:
             return jsonify(error=f"No user found with id {user_id}.")
     elif request.method == "PUT":
@@ -60,3 +80,5 @@ def manage_user(user_id):
     elif request.method == "DELETE":
         result = delete_user(user_id)
         return jsonify(result)
+    
+

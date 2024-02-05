@@ -6,6 +6,8 @@ from pymongo.errors import DuplicateKeyError
 from flask_login import logout_user
 from werkzeug.security import generate_password_hash
 
+
+
 def get_all_users():
     users = mongo.db.users.find()
     user_list = [
@@ -19,7 +21,7 @@ def get_all_users():
         for user in users
     ]
     return user_list
-def create_user(username, email, firstname, lastname, mobileno,password):
+def create_user(username, email, firstname, lastname, mobileno,password,role):
     try:
         hash_pwd = generate_password_hash(password)
         new_user = User(
@@ -28,7 +30,9 @@ def create_user(username, email, firstname, lastname, mobileno,password):
               firstname=firstname,
               lastname=lastname,
               mobileno=mobileno,
-              password=hash_pwd
+              password=hash_pwd,
+              role=role
+
               )
         new_user.save_to_db()
         return {"message": "user created successfully."}
@@ -82,7 +86,6 @@ def login(email, password):
 def logout():
     logout_user()
     return {"message": "Logout successful."}
-
 
 
 
