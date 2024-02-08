@@ -1,4 +1,3 @@
-
 from flask import Flask
 from flask_pymongo import PyMongo
 from .config import Config
@@ -6,6 +5,7 @@ import os
 from dotenv import load_dotenv
 from flask_jwt_extended import JWTManager
 from flask_login import LoginManager
+# from .views.auth import auth_blueprint
 
 
 
@@ -29,4 +29,5 @@ login_manager.login_view = 'user.login'
 
 app.register_blueprint(user_blueprint, url_prefix='/users')
 app.register_blueprint(tasks_blueprint, url_prefix='/tasks')
+# app.register_blueprint(auth_blueprint, url_prefix='/auth')
 
