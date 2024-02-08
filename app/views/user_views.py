@@ -1,13 +1,8 @@
-
 from flask import Blueprint, jsonify, request, flash
-from flask_login import login_user, logout_user, login_required
-from ..db_services.user_service import get_all_users, create_user, get_user_by_id, update_user, delete_user, authenticate_user
+from flask_login import login_user, logout_user, login_required, current_user
+from ..db_services.user_service import get_all_users, create_user, get_user_by_id, update_user, delete_user, authenticate_user,get_user_tasks
 from ..route.tasks import user_blueprint
-from ..route.tasks import tasks_blueprint
-from ..schema.schema import User
-from flask_jwt_extended import create_access_token 
-
-
+from flask_jwt_extended import create_access_token
 
 @user_blueprint.route('/login', methods=['POST'])
 def login():
@@ -21,20 +16,6 @@ def login():
         return jsonify(message='Login successful', access_token=access_token)
     else:
         return jsonify(error='Invalid email or password')
-@tasks_blueprint.route('/api', methods=["POST"])
-def create_task():
-    try:
-        data = request.get_json()
-        user_id = data.get('user_id')
-        user = User.get(user_id)
-        if user:
-            result = create_task(title=data['title'], description=data['description'], user_id=user_id)
-            return jsonify(result)
-        else:
-            return jsonify(error="User not found.")
-    except Exception as e:
-        return jsonify(error="Error creating task: {}".format(e))
-
 
 @user_blueprint.route('/logout')
 @login_required
@@ -42,7 +23,8 @@ def logout():
     logout_user()
     flash('Logout successful', 'success')
     return jsonify(message='Logout successful')
-@user_blueprint.route('/API', methods=["GET", "POST"])
+
+@user_blueprint.route('/apis', methods=["GET", "POST"])
 def manage_users():
     if request.method == "GET":
         users_list = get_all_users()
@@ -56,18 +38,18 @@ def manage_users():
                 password=data['password'],  
                 firstname=data['firstname'],
                 lastname=data['lastname'],
-                mobileno=data['mobileno'],
-                role=data['role']
+                mobileno=data['mobileno']
             )
             return jsonify(result)
         except Exception as e:
             return jsonify(error=f"Error creating user: {e}")
-@user_blueprint.route('/API/<string:user_id>', methods=["GET", "PUT", "DELETE"])
+
+@user_blueprint.route('/apis/<string:user_id>', methods=["GET", "PUT", "DELETE"])
 def manage_user(user_id):
     if request.method == "GET":
         user = get_user_by_id(user_id)
         if user:
-            return jsonify(user=user.to_dict())
+            return jsonify(user=user)
         else:
             return jsonify(error=f"No user found with id {user_id}.")
     elif request.method == "PUT":
@@ -80,5 +62,4 @@ def manage_user(user_id):
     elif request.method == "DELETE":
         result = delete_user(user_id)
         return jsonify(result)
-    
 
