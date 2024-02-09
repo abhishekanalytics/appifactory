@@ -1,9 +1,7 @@
-from flask_jwt_extended import create_access_token
 from ..schema.schema import User
 from .. import mongo
 from bson import ObjectId
 from pymongo.errors import DuplicateKeyError
-from flask_login import logout_user
 from werkzeug.security import generate_password_hash
 from ..db_services.tasks_service import get_user_tasks
 
@@ -84,17 +82,6 @@ def authenticate_user(email, password):
         return user
     return None
 
-def login(email, password):
-    user = authenticate_user(email, password)
-    if user:
-        access_token = create_access_token(identity=str(user.id))
-        return {"message": "Login successful.", "access_token": access_token}
-    else:
-        return {"error": "Invalid user or password."}
-
-def logout():
-    logout_user()
-    return {"message": "Logout successful."}
 
 
 
