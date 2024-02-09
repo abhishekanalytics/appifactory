@@ -4,12 +4,13 @@ from ..route.tasks import tasks_blueprint
 from flask_login import current_user
 
 
-@tasks_blueprint.route('/api', methods=["GET", "POST"])
+@tasks_blueprint.route('/all', methods=["GET"])
 def manage_tasks():
     if request.method == "GET":
         tasks_list = get_all_tasks()
         return jsonify(tasks_list=tasks_list)
-    elif request.method == "POST":        
+@tasks_blueprint.route('/create', methods=["POST"])
+def creats_tasks():
         try:          
             data = request.get_json()           
             user_id = data.get('user_id')          
@@ -19,7 +20,7 @@ def manage_tasks():
             print(str(e))
             return jsonify(error="give data in JSON format in 'in raw'")
 
-@tasks_blueprint.route('/api/<string:task_id>', methods=["GET", "PUT", "DELETE"])
+@tasks_blueprint.route('/<string:task_id>', methods=["GET", "PUT", "DELETE"])
 def manage_task(task_id):
     if request.method == "GET":
         task = get_task_by_id(task_id)

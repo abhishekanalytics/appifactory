@@ -9,3 +9,5 @@ login_manager = LoginManager(app)
 def load_user(user_id):
     print("assdsds", user_id)
     return User.get(user_id)
+
+
