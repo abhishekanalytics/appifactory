@@ -2,8 +2,8 @@ from flask import Blueprint, jsonify, request, flash
 from flask_login import login_user, logout_user,current_user
 from ..db_services.user_service import get_all_users, create_user, get_user_by_id, update_user, delete_user, authenticate_user
 from ..route.tasks import user_blueprint
-from flask_jwt_extended import create_access_token,jwt_required
-
+from flask_jwt_extended import create_access_token,jwt_required,get_jwt_identity
+from app.auth import admin_required,manager_required
 @user_blueprint.route('/login', methods=['POST'])
 def login():
     data = request.get_json()
@@ -24,12 +24,15 @@ def logout():
 
 @user_blueprint.route('/all', methods=["GET"])
 @jwt_required()
+@manager_required
 def manage_users():
+        current_user_id = get_jwt_identity()
+        print("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",current_user_id)
         users_list = get_all_users()
         return jsonify(users_list=users_list)
 
 @user_blueprint.route('/create', methods=["POST"])
-@jwt_required()
+# @jwt_required()
 def create_users():
         try:
 
@@ -40,7 +43,8 @@ def create_users():
                 password=data['password'],  
                 firstname=data['firstname'],
                 lastname=data['lastname'],
-                mobileno=data['mobileno']
+                mobileno=data['mobileno'],
+                role=data['role']
             )
             return jsonify(result)
         except Exception as e:
@@ -48,21 +52,24 @@ def create_users():
         
 @user_blueprint.route('user/<string:user_id>', methods=["GET", "PUT", "DELETE"])
 @jwt_required()
+@admin_required
 def manage_user(user_id):
-    if request.method == "GET":
+    current_user_id = get_jwt_identity()
+    if current_user_id:
+        if request.method == "GET":
 
-        user = get_user_by_id(user_id)
-        if user:
-            return jsonify(user=user)
-        else:
-            return jsonify(error=f"No user found with id {user_id}.")
-    elif request.method == "PUT":
-        try:
-            data = request.get_json()
-            result = update_user(user_id, email=data.get('email'))
+            user = get_user_by_id(user_id)
+            if user:
+                return jsonify(user=user)
+            else:
+                return jsonify(error=f"No user found with id {user_id}.")
+        elif request.method == "PUT":
+            try:
+                data = request.get_json()
+                result = update_user(user_id, email=data.get('email'))
+                return jsonify(result)
+            except Exception as e:
+                return jsonify(error=f"Error updating user: {e}")
+        elif request.method == "DELETE":
+            result = delete_user(user_id)
             return jsonify(result)
-        except Exception as e:
-            return jsonify(error=f"Error updating user: {e}")
-    elif request.method == "DELETE":
-        result = delete_user(user_id)
-        return jsonify(result)
