@@ -67,6 +67,5 @@ def get_user_tasks(user_id):
             'description': task['description']
         }
         for task in tasks_data
-
     ]
     return tasks
