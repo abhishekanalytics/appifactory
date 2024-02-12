@@ -15,7 +15,6 @@ def manage_tasks():
 
 
 @tasks_blueprint.route('/create', methods=["POST"])
-@jwt_required()
 def creats_tasks():
         try:
             data = request.get_json()           
@@ -33,7 +32,7 @@ def manage_task(task_id):
     current_user_id = get_jwt_identity()
     if current_user_id:
         if request.method == "GET":
-            task = get_task_by_id(task_id)
+            task = get_task_by_id(task_id)          
             if task:
                 return jsonify(task=task)
             else:

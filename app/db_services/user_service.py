@@ -64,7 +64,7 @@ def update_user(user_id, email):
         if result.modified_count > 0:
             return {"message": f"User with id {user_id} updated successfully."}
         else:
-            return {"message": f"No user found with id {user_id}."}
+            return {"message": f"This email has already changed"}
     except Exception as e:
         return {"error": f"Error updating user: {e}"}
 
