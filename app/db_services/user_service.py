@@ -1,8 +1,8 @@
-from ..schema.schema import User
-from .. import mongo
 from bson import ObjectId
 from pymongo.errors import DuplicateKeyError
 from werkzeug.security import generate_password_hash
+from ..schema.schema import User
+from .. import mongo
 from ..db_services.tasks_service import get_user_tasks
 
 def get_all_users():
@@ -47,7 +47,9 @@ def get_user_by_id(user_id):
             user_data['email'],
             user_data['firstname'],
             user_data['lastname'],
-            user_data['mobileno']
+            user_data['mobileno'],
+            user_data['role']
+
         )
         user_dict = user.to_dict()
         user_dict['tasks'] = get_user_tasks(user_id)

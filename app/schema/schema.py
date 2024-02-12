@@ -1,8 +1,9 @@
+from bson import ObjectId
 from flask_login import UserMixin
+from pymongo import IndexModel, ASCENDING
 from werkzeug.security import check_password_hash
 from .. import mongo
-from bson import ObjectId
-from pymongo import IndexModel, ASCENDING
+
 
 class User(UserMixin):
     def __init__(self, username, email, firstname, lastname, mobileno, password,role,user_id=None):
@@ -38,7 +39,7 @@ class User(UserMixin):
         collection.create_indexes(indexes)
 
     def save_to_db(self):
-        if not self.role in ["admin","maneger","employee"]:
+        if not self.role in ["manager", "admin"]:
             return {"message":"Invalid role"}
 
         collection = mongo.db.users
@@ -101,7 +102,6 @@ class Task:
         }
 
     def save_to_db(self):
-        print(ObjectId(self.user_id))
         collection = mongo.db.tasks
         task_data = {
             "title": self.title,
