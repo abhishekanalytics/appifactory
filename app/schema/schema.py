@@ -39,8 +39,8 @@ class User(UserMixin):
         collection.create_indexes(indexes)
 
     def save_to_db(self):
-        if not self.role in ["manager", "admin"]:
-            return {"message":"Invalid role"}
+        if self.role not in ["manager", "admin","employee"]:
+          return {"message":"Invalid role"}
 
         collection = mongo.db.users
         user_data = {
@@ -54,7 +54,7 @@ class User(UserMixin):
         }
         result = collection.insert_one(user_data)
         return {"message": "User created successfully."}
-
+        
     def get(user_id):
         user_data = mongo.db.users.find_one({"_id": ObjectId(user_id)})
         if user_data:

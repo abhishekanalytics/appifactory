@@ -3,10 +3,12 @@ from flask import jsonify, request
 from flask_jwt_extended import jwt_required,get_jwt_identity
 from ..db_services.tasks_service import get_all_tasks, create_task, get_task_by_id, update_task, delete_task
 from ..route.tasks import tasks_blueprint
+# from app.decorators import manager_required,admin_required,empolyee_required
 
 
 @tasks_blueprint.route('/all', methods=["GET"])
 @jwt_required()
+# @admin_required
 def manage_tasks():
         current_user_id = get_jwt_identity()
         if current_user_id:

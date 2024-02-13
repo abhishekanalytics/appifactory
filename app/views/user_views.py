@@ -3,7 +3,7 @@ from flask_login import login_user, logout_user,current_user
 from flask_jwt_extended import create_access_token,jwt_required,get_jwt_identity
 from ..db_services.user_service import get_all_users, create_user, get_user_by_id, update_user, delete_user, authenticate_user
 from ..route.tasks import user_blueprint
-from app.decorators import manager_required,admin_required
+from app.decorators import admin_required,manager_required,employee_required
 
 @user_blueprint.route('/login', methods=['POST'])
 def login():
@@ -20,6 +20,7 @@ def login():
     
 
 @user_blueprint.route('/logout')
+@admin_required
 @jwt_required()
 def logout():
     logout_user()

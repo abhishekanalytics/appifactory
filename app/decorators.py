@@ -27,12 +27,12 @@ def manager_required(f):
     return decorated_function
 
 
-def empolyee_required(f):
+def employee_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
         current_user_id = get_jwt_identity()
         current_user = User.get(current_user_id)
-        if current_user.role == "manager":
+        if current_user.role == "employee":
             return f(*args, **kwargs)
         else:
             return jsonify(error="Unauthorized")
