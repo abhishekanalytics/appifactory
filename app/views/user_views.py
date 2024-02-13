@@ -69,7 +69,12 @@ def manage_user(user_id):
         elif request.method == "PUT":
             try:
                 data = request.get_json()
-                result = update_user(user_id, mobileno=data.get('mobileno'))
+                result = update_user(
+                    user_id, mobileno=data.get('mobileno'),
+                    username=data.get('username'),
+                    firstname=data.get('firstname'),
+                    lastname=data.get('lastname')
+                    )
                 return jsonify(result)
             except Exception as e:
                 return jsonify(error=f"Error updating user: {e}")

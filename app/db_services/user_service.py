@@ -48,8 +48,7 @@ def get_user_by_id(user_id):
             user_data['firstname'],
             user_data['lastname'],
             user_data['mobileno'],
-            user_data['role']
-
+            user_data['role'],
         )
         user_dict = user.to_dict()
         user_dict['tasks'] = get_user_tasks(user_id)
@@ -57,9 +56,9 @@ def get_user_by_id(user_id):
     else:
         return None
 
-def update_user(user_id, mobileno):
+def update_user(user_id, mobileno,username,firstname,lastname):
     try:
-        updated_data = {"$set": {"mobileno": mobileno}}
+        updated_data = {"$set": {"mobileno": mobileno,"username":username,"firstname":firstname,"lastname":lastname}}
         result = mongo.db.users.update_one({"_id": ObjectId(user_id)}, updated_data)
         return {"message": f"User with id {user_id} updated successfully."}
     except Exception as e:
