@@ -1,6 +1,6 @@
+from bson import ObjectId
 from ..schema.schema import Task
 from .. import mongo
-from bson import ObjectId
 
 def get_all_tasks():
     tasks = mongo.db.tasks.find()
@@ -67,6 +67,5 @@ def get_user_tasks(user_id):
             'description': task['description']
         }
         for task in tasks_data
-
     ]
     return tasks

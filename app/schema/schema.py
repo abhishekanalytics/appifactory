@@ -1,11 +1,12 @@
+from bson import ObjectId
 from flask_login import UserMixin
+from pymongo import IndexModel, ASCENDING
 from werkzeug.security import check_password_hash
 from .. import mongo
-from bson import ObjectId
-from pymongo import IndexModel, ASCENDING
+
 
 class User(UserMixin):
-    def __init__(self, username, email, firstname, lastname, mobileno, password, user_id=None):
+    def __init__(self, username, email, firstname, lastname, mobileno, password,role,user_id=None):
         self.id = str(user_id)
         self.username = username
         self.email = email
@@ -13,6 +14,7 @@ class User(UserMixin):
         self.lastname = lastname
         self.mobileno = mobileno
         self.password = password
+        self.role=role
 
     def check_password(self, pwd):
         return check_password_hash(self.password, pwd)
@@ -23,7 +25,8 @@ class User(UserMixin):
             'email': self.email,
             "mobileno": self.mobileno,
             "firstname": self.firstname,
-            "lastname": self.lastname
+            "lastname": self.lastname,
+            "role":self.role
         }
 
     @staticmethod
@@ -36,6 +39,9 @@ class User(UserMixin):
         collection.create_indexes(indexes)
 
     def save_to_db(self):
+        if self.role not in ["manager", "admin","employee"]:
+          return {"message":"Invalid role"}
+
         collection = mongo.db.users
         user_data = {
             "username": self.username,
@@ -44,10 +50,11 @@ class User(UserMixin):
             "lastname": self.lastname,
             "mobileno": self.mobileno,
             "password": self.password,
+            "role":self.role
         }
         result = collection.insert_one(user_data)
         return {"message": "User created successfully."}
-
+        
     def get(user_id):
         user_data = mongo.db.users.find_one({"_id": ObjectId(user_id)})
         if user_data:
@@ -58,7 +65,9 @@ class User(UserMixin):
                 firstname=user_data['firstname'],
                 lastname=user_data['lastname'],
                 mobileno=user_data['mobileno'],
-                password=user_data["password"]
+                password=user_data["password"],
+                role=user_data['role']
+                
             )
         return None
 
@@ -74,7 +83,8 @@ class User(UserMixin):
                 firstname=user_data['firstname'],
                 lastname=user_data['lastname'],
                 mobileno=user_data['mobileno'],
-                password=user_data['password']
+                password=user_data['password'],
+                role=user_data['role']
             )
 User.create_indexes()
 
@@ -92,7 +102,6 @@ class Task:
         }
 
     def save_to_db(self):
-        print(ObjectId(self.user_id))
         collection = mongo.db.tasks
         task_data = {
             "title": self.title,
