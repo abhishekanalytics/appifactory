@@ -20,8 +20,8 @@ def login():
     
 
 @user_blueprint.route('/logout')
-@admin_required
 @jwt_required()
+@admin_required
 def logout():
     logout_user()
     return jsonify(message='Logout successful')
@@ -55,7 +55,7 @@ def create_users():
 
 @user_blueprint.route('user/<string:user_id>', methods=["GET", "PUT", "DELETE"])
 @jwt_required()
-@admin_required
+@employee_required
 def manage_user(user_id):
     current_user_id = get_jwt_identity()
     if current_user_id:
@@ -69,7 +69,7 @@ def manage_user(user_id):
         elif request.method == "PUT":
             try:
                 data = request.get_json()
-                result = update_user(user_id, email=data.get('email'))
+                result = update_user(user_id, mobileno=data.get('mobileno'))
                 return jsonify(result)
             except Exception as e:
                 return jsonify(error=f"Error updating user: {e}")

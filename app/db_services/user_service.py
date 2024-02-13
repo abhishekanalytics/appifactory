@@ -57,16 +57,14 @@ def get_user_by_id(user_id):
     else:
         return None
 
-def update_user(user_id, email):
+def update_user(user_id, mobileno):
     try:
-        updated_data = {"$set": {"email": email}}
+        updated_data = {"$set": {"mobileno": mobileno}}
         result = mongo.db.users.update_one({"_id": ObjectId(user_id)}, updated_data)
-        if result.modified_count > 0:
-            return {"message": f"User with id {user_id} updated successfully."}
-        else:
-            return {"message": f"This email has already changed"}
+        return {"message": f"User with id {user_id} updated successfully."}
     except Exception as e:
         return {"error": f"Error updating user: {e}"}
+
 
 def delete_user(user_id):
     try:

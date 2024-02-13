@@ -20,7 +20,7 @@ def manager_required(f):
     def decorated_function(*args, **kwargs):
         current_user_id = get_jwt_identity()
         current_user = User.get(current_user_id)
-        if current_user.role =="manager": 
+        if current_user.role == "manager" or current_user.role == "admin": 
             return f(*args, **kwargs)
         else:
             return jsonify(error="Unauthorized")
@@ -32,7 +32,7 @@ def employee_required(f):
     def decorated_function(*args, **kwargs):
         current_user_id = get_jwt_identity()
         current_user = User.get(current_user_id)
-        if current_user.role == "employee":
+        if current_user.role == "employee"or current_user.role == "admin":
             return f(*args, **kwargs)
         else:
             return jsonify(error="Unauthorized")
