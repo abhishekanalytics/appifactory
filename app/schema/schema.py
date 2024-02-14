@@ -34,7 +34,7 @@ class User(UserMixin):
         collection = mongo.db.users
         indexes = [
             IndexModel([("email", ASCENDING)], unique=True),
-            IndexModel([("username", ASCENDING)], unique=False),
+            IndexModel([("username", ASCENDING)], unique=True),
         ]
         collection.create_indexes(indexes)
 
