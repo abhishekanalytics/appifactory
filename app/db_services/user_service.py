@@ -1,16 +1,14 @@
-from flask_jwt_extended import create_access_token
-from ..schema.schema import User
-from .. import mongo
 from bson import ObjectId
 from pymongo.errors import DuplicateKeyError
-from flask_login import logout_user
 from werkzeug.security import generate_password_hash
+from ..schema.schema import User
+from .. import mongo
 from ..db_services.tasks_service import get_user_tasks
 
 def get_all_users():
     users = mongo.db.users.find()
     user_list = [
-        {
+        {    'role': user['role'],
             'username': user['username'],
             'email': user['email'],
             'firstname': user['firstname'],
@@ -23,7 +21,7 @@ def get_all_users():
     ]
     return user_list
 
-def create_user(username, email, firstname, lastname, mobileno, password):
+def create_user(username, email, firstname, lastname, mobileno, password,role):
     try:
         hash_pwd = generate_password_hash(password)
         new_user = User(
@@ -33,7 +31,7 @@ def create_user(username, email, firstname, lastname, mobileno, password):
             lastname=lastname,
             mobileno=mobileno,
             password=hash_pwd,
-            # role=role
+            role=role
         )
         new_user.save_to_db()
         return {"message": "user created successfully."}
@@ -43,30 +41,31 @@ def create_user(username, email, firstname, lastname, mobileno, password):
 def get_user_by_id(user_id):
     user_data = mongo.db.users.find_one({"_id": ObjectId(user_id)})
     if user_data:
-        user = User(
-            str(user_data['_id']),
-            user_data['username'],
-            user_data['email'],
-            user_data['firstname'],
-            user_data['lastname'],
-            user_data['mobileno']
-        )
-        user_dict = user.to_dict()
-        user_dict['tasks'] = get_user_tasks(user_id)
-        return user_dict
+        user ={
+            '_id':str(user_data['_id']),
+            'username':user_data['username'],
+            'email':user_data['email'],
+            'firstname':user_data['firstname'],
+            'lastname':user_data['lastname'],
+            'mobilename':user_data['mobileno'],
+            'role':user_data['role'],
+        }
+        user['tasks'] = get_user_tasks(user_id)
+        return user
     else:
         return None
 
-def update_user(user_id, email):
+
+
+
+def update_user(user_id, mobileno,username,firstname,lastname):
     try:
-        updated_data = {"$set": {"email": email}}
+        updated_data = {"$set": {"mobileno": mobileno,"username":username,"firstname":firstname,"lastname":lastname}}
         result = mongo.db.users.update_one({"_id": ObjectId(user_id)}, updated_data)
-        if result.modified_count > 0:
-            return {"message": f"User with id {user_id} updated successfully."}
-        else:
-            return {"message": f"No user found with id {user_id}."}
+        return {"message": f"User with id {user_id} updated successfully."}
     except Exception as e:
         return {"error": f"Error updating user: {e}"}
+
 
 def delete_user(user_id):
     try:
@@ -83,21 +82,6 @@ def authenticate_user(email, password):
     if user and user.check_password(password):
         return user
     return None
-
-def login(email, password):
-    user = authenticate_user(email, password)
-    if user:
-        access_token = create_access_token(identity=str(user.id))
-        return {"message": "Login successful.", "access_token": access_token}
-    else:
-        return {"error": "Invalid user or password."}
-
-def logout():
-    logout_user()
-    return {"message": "Logout successful."}
-
-
-
 
 
 
