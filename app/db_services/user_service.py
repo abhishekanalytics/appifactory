@@ -41,20 +41,22 @@ def create_user(username, email, firstname, lastname, mobileno, password,role):
 def get_user_by_id(user_id):
     user_data = mongo.db.users.find_one({"_id": ObjectId(user_id)})
     if user_data:
-        user = User(
-            str(user_data['_id']),
-            user_data['username'],
-            user_data['email'],
-            user_data['firstname'],
-            user_data['lastname'],
-            user_data['mobileno'],
-            user_data['role'],
-        )
-        user_dict = user.to_dict()
-        user_dict['tasks'] = get_user_tasks(user_id)
-        return user_dict
+        user ={
+            '_id':str(user_data['_id']),
+            'username':user_data['username'],
+            'email':user_data['email'],
+            'firstname':user_data['firstname'],
+            'lastname':user_data['lastname'],
+            'mobilename':user_data['mobileno'],
+            'role':user_data['role'],
+        }
+        user['tasks'] = get_user_tasks(user_id)
+        return user
     else:
         return None
+
+
+
 
 def update_user(user_id, mobileno,username,firstname,lastname):
     try:
