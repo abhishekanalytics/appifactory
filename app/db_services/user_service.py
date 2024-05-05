@@ -8,7 +8,7 @@ from ..db_services.tasks_service import get_user_tasks
 def get_all_users():
     users = mongo.db.users.find()
     user_list = [
-        {
+        {    'role': user['role'],
             'username': user['username'],
             'email': user['email'],
             'firstname': user['firstname'],
@@ -21,7 +21,7 @@ def get_all_users():
     ]
     return user_list
 
-def create_user(username, email, firstname, lastname, mobileno, password):
+def create_user(username, email, firstname, lastname, mobileno, password,role):
     try:
         hash_pwd = generate_password_hash(password)
         new_user = User(
@@ -31,7 +31,7 @@ def create_user(username, email, firstname, lastname, mobileno, password):
             lastname=lastname,
             mobileno=mobileno,
             password=hash_pwd,
-            # role=role
+            role=role
         )
         new_user.save_to_db()
         return {"message": "user created successfully."}
@@ -81,10 +81,6 @@ def authenticate_user(email, password):
     if user and user.check_password(password):
         return user
     return None
-
-
-
-
 
 
 

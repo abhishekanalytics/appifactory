@@ -5,7 +5,7 @@ from bson import ObjectId
 from pymongo import IndexModel, ASCENDING
 
 class User(UserMixin):
-    def __init__(self, username, email, firstname, lastname, mobileno, password, user_id=None):
+    def __init__(self, username, email, firstname, lastname, mobileno, password,role,user_id=None):
         self.id = str(user_id)
         self.username = username
         self.email = email
@@ -13,6 +13,7 @@ class User(UserMixin):
         self.lastname = lastname
         self.mobileno = mobileno
         self.password = password
+        self.role=role
 
     def check_password(self, pwd):
         return check_password_hash(self.password, pwd)
@@ -23,7 +24,8 @@ class User(UserMixin):
             'email': self.email,
             "mobileno": self.mobileno,
             "firstname": self.firstname,
-            "lastname": self.lastname
+            "lastname": self.lastname,
+            "role":self.role
         }
 
     @staticmethod
@@ -36,6 +38,9 @@ class User(UserMixin):
         collection.create_indexes(indexes)
 
     def save_to_db(self):
+        if not self.role in ["admin","maneger","employee"]:
+            return {"message":"Invalid role"}
+
         collection = mongo.db.users
         user_data = {
             "username": self.username,
@@ -44,6 +49,7 @@ class User(UserMixin):
             "lastname": self.lastname,
             "mobileno": self.mobileno,
             "password": self.password,
+            "role":self.role
         }
         result = collection.insert_one(user_data)
         return {"message": "User created successfully."}
@@ -58,7 +64,9 @@ class User(UserMixin):
                 firstname=user_data['firstname'],
                 lastname=user_data['lastname'],
                 mobileno=user_data['mobileno'],
-                password=user_data["password"]
+                password=user_data["password"],
+                role=user_data['role']
+                
             )
         return None
 
@@ -74,7 +82,8 @@ class User(UserMixin):
                 firstname=user_data['firstname'],
                 lastname=user_data['lastname'],
                 mobileno=user_data['mobileno'],
-                password=user_data['password']
+                password=user_data['password'],
+                role=user_data['role']
             )
 User.create_indexes()
 
